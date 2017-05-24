@@ -15,23 +15,25 @@ public class Control implements Runnable, MouseListener {
 	private Model model;
 	private View view;
 
+	private float scale;
+
 	Thread thread;
 
 	public Control() {
 		frame = new JFrame(title);
 		frame.pack();
-		
+
 		model = new Model(this);
 		view = new View(model.ObstacleList, model.bird);
 		view.setPreferredSize(new Dimension(width, height));
-		
+
 		frame.add(view);
 		frame.addMouseListener(this);
 
 		frame.setPreferredSize(frame.getPreferredSize());
 		frame.pack();
 		frame.setVisible(true);
-		
+
 		thread = new Thread(this);
 		thread.start();
 

@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.List;
 
@@ -14,22 +15,26 @@ public class View extends JPanel {
 		this.ObstacleList = ObstacleList;
 	}
 
+	private float getScale() {
+		return (getWidth() / 800f) < (getHeight() / 600f) ? (getWidth() / 800f) : (getHeight() / 600f);
+	}
+
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 
-
 		// Draw Bird
 		g.setColor(Color.red);
-		g.fillOval((int) bird.getX(), (int) bird.getY(), (int) bird.getWidth(), (int) bird.getHeight());
+		g.fillOval((int) (bird.getX() * getScale()), (int) (bird.getY() * getScale()),
+				(int) (bird.getWidth() * getScale()), (int) (bird.getHeight() * getScale()));
 
 		// Draw Obstacles
 		for (int i = 0; i < ObstacleList.size(); i++) {
 			Obstacle tempObject = ObstacleList.get(i);
 			g.setColor(Color.GREEN);
-
-			g.fillRect((int) tempObject.getX(), (int) tempObject.getY(), (int) tempObject.getWidth(),
-					(int) tempObject.getHeight());
+			
+			g.fillRect((int) (tempObject.getX()* getScale()), (int) (tempObject.getY()* getScale()), (int) (tempObject.getWidth()* getScale()),
+					(int) (tempObject.getHeight()* getScale()));
 		}
 
 	}

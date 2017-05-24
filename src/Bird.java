@@ -1,4 +1,5 @@
 import java.awt.Rectangle;
+import java.util.List;
 
 public class Bird {
 
@@ -6,20 +7,55 @@ public class Bird {
 	private float velX, velY;
 	private float width = 50, height = 45;
 
+	private boolean dead = false;
+
 	public Bird(float x, float y) {
 		this.x = x;
 		this.y = y;
 	}
-	
-	public void tick(double dt) {
-		velY -= 500f*dt;
+
+	public void tick(double dt, List<Obstacle> ObstacleList) {
+		velY -= 500f * dt;
 		
-		x -= velX*dt;
-		y -= velY*dt;
+		collision(ObstacleList);
+
+		y -= velY * dt;
+
+	}
+
+	private void collision(List<Obstacle> ObstacleList) {
+
+		for (int i = 0; i < ObstacleList.size(); i++) {
+			Obstacle tempObject = ObstacleList.get(i);
+
+			if (getBound().intersects(tempObject.getBounds())) {
+				dead = true;
+				if (x + getWidth() / 10 * 9 <= tempObject.getX()) {
+					x = tempObject.getX() - width;
+				} else if (y < tempObject.getY()) {
+					y = tempObject.getY() - height;
+					velY = 0;
+				} else if (y > tempObject.getY() + tempObject.getHeight()) {
+					y = tempObject.getY() + tempObject.getHeight();
+					y = tempObject.getY()+tempObject.getHeight();
+					y = velY = 0;
+				}
+			}
+
+		}
+
 	}
 
 	private Rectangle getBound() {
 		return new Rectangle((int) x, (int) y, (int) width, (int) height);
+	}
+
+	public boolean isDead() {
+		return dead;
+	}
+
+	public void setDead(boolean dead) {
+		this.dead = dead;
 	}
 
 	public float getWidth() {

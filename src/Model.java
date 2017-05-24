@@ -1,4 +1,3 @@
-import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +11,8 @@ public class Model {
 
 	private int distbetwObst = 500;
 
+	private boolean run;
+
 	public Model(Control c) {
 		this.c = c;
 		bird = new Bird(c.getWidth() / 5, c.getHeight() / 2);
@@ -19,15 +20,31 @@ public class Model {
 	}
 
 	public void tick(double dt) {
-		bird.tick(dt);
-		for (int i = 0; i < ObstacleList.size(); i++) {
-			ObstacleList.get(i).tick(dt);
+		if (run) {
+			if (bird.getY() + bird.getHeight() >= c.getHeight()) {
+				bird.setDead(true);
+				bird.setVelY(0);
+				bird.setY(c.getHeight() - bird.getHeight());
+			}else if(bird.getY()<=0){
+				bird.setDead(true);
+			}
+
+			bird.tick(dt, ObstacleList);
+
+			if (!bird.isDead()) {
+				for (int i = 0; i < ObstacleList.size(); i++) {
+					ObstacleList.get(i).tick(dt);
+				}
+			}
+
+			updateMap();
 		}
-		updateMap();
 	}
 
 	public void mousePressed() {
-		bird.setVelY(200);
+		if (!bird.isDead())
+			bird.setVelY(200);
+		run = true;
 	}
 
 	private void resetMap() {
