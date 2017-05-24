@@ -24,7 +24,7 @@ public class Control implements Runnable, MouseListener {
 		frame.pack();
 
 		model = new Model(this);
-		view = new View(model.ObstacleList, model.bird);
+		view = new View(model.ObstacleList, model.bird, this);
 		view.setPreferredSize(new Dimension(width, height));
 
 		frame.add(view);
@@ -52,12 +52,21 @@ public class Control implements Runnable, MouseListener {
 	@Override
 	public void run() {
 		long lasttime = System.currentTimeMillis();
+		long countingtime = lasttime;
+		int frames = 0;
 		while (true) {
 			long currenttime = System.currentTimeMillis();
+			
+			if(currenttime-countingtime>=1000){
+				countingtime = currenttime;
+				frame.setTitle(title + " - " + frames + " FPS");
+			}
+			
 			double dt = (currenttime - lasttime) / 1000.0;
 
 			model.tick(dt);
 			updateView();
+			frames++;
 
 			lasttime = currenttime;
 			try {

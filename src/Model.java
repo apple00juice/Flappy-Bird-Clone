@@ -15,7 +15,7 @@ public class Model {
 
 	public Model(Control c) {
 		this.c = c;
-		bird = new Bird(c.getWidth() / 5, c.getHeight() / 2);
+		bird = new Bird(c.getWidth() / 5, c.getHeight() / 3*2);
 		resetMap();
 	}
 
