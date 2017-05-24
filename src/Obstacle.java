@@ -12,6 +12,10 @@ class Obstacle {
 			this.height = height;
 		}
 		
+		public void tick(double dt){
+			x -= 100*dt;
+		}
+		
 		public Rectangle getBounds(){
 			return new Rectangle((int) x, (int) y, (int) width, (int) height);
 		}
