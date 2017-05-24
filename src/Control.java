@@ -1,6 +1,11 @@
+
+
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
 import javax.swing.JFrame;
 
-public class Control implements Runnable{
+public class Control implements Runnable,MouseListener{
 
 	private JFrame frame;
 
@@ -8,6 +13,8 @@ public class Control implements Runnable{
 	private int width = 800, height = 600;
 	
 	private Model model;
+	
+	Thread thread;
 
 	public Control() {
 		model = new Model();
@@ -15,12 +22,20 @@ public class Control implements Runnable{
 		frame = new JFrame(title);
 		frame.setSize(width, height);
 		frame.setVisible(true);
+		
+		thread = new Thread(this);
+		thread.start();
+		
 	}
+	
+	
 	
 
 	public static void main(String[] args) {
 		new Control();
 	}
+	
+	
 
 
 	@Override
@@ -40,4 +55,34 @@ public class Control implements Runnable{
 
 		}	
 	}
+
+	@Override
+	public void mouseClicked(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 }
