@@ -4,6 +4,7 @@ class Obstacle {
 		
 		private float x,y;
 		private float width,height;
+		private boolean passed = false;
 		
 		public Obstacle(float x, float y, float width, float height) {
 			this.x = x;
@@ -51,6 +52,15 @@ class Obstacle {
 		public void setHeight(float height) {
 			this.height = height;
 		}
+
+		public boolean isPassed() {
+			return passed;
+		}
+
+		public void setPassed(boolean passed) {
+			this.passed = passed;
+		}
+		
 		
 		
 	}

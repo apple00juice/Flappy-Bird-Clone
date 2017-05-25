@@ -7,6 +7,8 @@ public class Bird {
 	private float velX, velY;
 	private float width = 50, height = 45;
 
+	private float gravity = 500;
+
 	private boolean dead = false;
 
 	public Bird(float x, float y) {
@@ -15,8 +17,8 @@ public class Bird {
 	}
 
 	public void tick(double dt, List<Obstacle> ObstacleList) {
-		velY -= 500f * dt;
-		
+		velY -= gravity * dt;
+
 		collision(ObstacleList);
 
 		y -= velY * dt;
@@ -37,7 +39,7 @@ public class Bird {
 					velY = 0;
 				} else if (y > tempObject.getY() + tempObject.getHeight()) {
 					y = tempObject.getY() + tempObject.getHeight();
-					y = tempObject.getY()+tempObject.getHeight();
+					y = tempObject.getY() + tempObject.getHeight();
 					y = velY = 0;
 				}
 			}
@@ -96,6 +98,14 @@ public class Bird {
 
 	public void setY(float y) {
 		this.y = y;
+	}
+
+	public float getGravity() {
+		return gravity;
+	}
+
+	public void setGravity(float gravity) {
+		this.gravity = gravity;
 	}
 
 }

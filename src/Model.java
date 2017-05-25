@@ -12,6 +12,8 @@ public class Model {
 	private int distbetwObst = 500;
 
 	private boolean run;
+	
+	private int counter;
 
 	public Model(Control c) {
 		this.c = c;
@@ -21,6 +23,17 @@ public class Model {
 
 	public void tick(double dt) {
 		if (run) {
+			
+			System.out.println(counter);
+			
+			for(int i = 0; i < ObstacleList.size(); i+=2){
+				Obstacle tempObject = ObstacleList.get(i);
+				if(!tempObject.isPassed() && tempObject.getX() < bird.getX()){
+					tempObject.setPassed(true);
+					counter++;
+				}
+			}
+			
 			if (bird.getY() + bird.getHeight() >= c.getHeight()) {
 				bird.setDead(true);
 				bird.setVelY(0);
@@ -41,13 +54,18 @@ public class Model {
 		}
 	}
 
-	public void mousePressed() {
+	public void SpacePressed() {
 		if (!bird.isDead())
-			bird.setVelY(200);
+			bird.setVelY(150);
 		run = true;
 	}
 
-	private void resetMap() {
+	public void resetMap() {
+		run = false;
+		counter = 0;
+		ObstacleList.clear();
+		bird.setY(c.getHeight()/3*2);
+		
 		for (int i = 0; i < 3; i++) {
 			int gapHight = 200;
 			int gapY = Math.round(Math.round((Math.random() * (c.getHeight() - gapHight))));
@@ -87,5 +105,15 @@ public class Model {
 		}
 
 	}
+
+	public int getCounter() {
+		return counter;
+	}
+
+	public void setCounter(int counter) {
+		this.counter = counter;
+	}
+	
+	
 
 }

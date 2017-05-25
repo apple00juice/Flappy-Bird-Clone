@@ -1,11 +1,13 @@
 
 import java.awt.Dimension;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.JFrame;
 
-public class Control implements Runnable, MouseListener {
+public class Control implements Runnable, KeyListener {
 
 	private JFrame frame;
 
@@ -14,8 +16,6 @@ public class Control implements Runnable, MouseListener {
 
 	private Model model;
 	private View view;
-
-	private float scale;
 
 	Thread thread;
 
@@ -28,7 +28,7 @@ public class Control implements Runnable, MouseListener {
 		view.setPreferredSize(new Dimension(width, height));
 
 		frame.add(view);
-		frame.addMouseListener(this);
+		frame.addKeyListener(this);
 
 		frame.setPreferredSize(frame.getPreferredSize());
 		frame.pack();
@@ -45,6 +45,7 @@ public class Control implements Runnable, MouseListener {
 
 	private void updateView() {
 		view.ObstacleList = model.ObstacleList;
+		view.setCounter(model.getCounter());
 		view.repaint();
 
 	}
@@ -56,12 +57,12 @@ public class Control implements Runnable, MouseListener {
 		int frames = 0;
 		while (true) {
 			long currenttime = System.currentTimeMillis();
-			
-			if(currenttime-countingtime>=1000){
+
+			if (currenttime - countingtime >= 1000) {
 				countingtime = currenttime;
 				frame.setTitle(title + " - " + frames + " FPS");
 			}
-			
+
 			double dt = (currenttime - lasttime) / 1000.0;
 
 			model.tick(dt);
@@ -77,34 +78,7 @@ public class Control implements Runnable, MouseListener {
 		}
 	}
 
-	@Override
-	public void mouseClicked(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mousePressed(MouseEvent arg0) {
-		model.mousePressed();
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
+	
 
 	public int getWidth() {
 		return width;
@@ -112,6 +86,34 @@ public class Control implements Runnable, MouseListener {
 
 	public int getHeight() {
 		return height;
+	}
+
+	private boolean released = true;
+	
+	@Override
+	public void keyPressed(KeyEvent e) {
+		if(e.getKeyCode() == e.VK_SPACE && released){
+			model.SpacePressed();
+		}
+		
+		if(e.getKeyCode() == e.VK_R){
+			model.resetMap();
+			
+		}
+		
+		released = false;
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		released = true;
+		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		
+		
 	}
 
 }
