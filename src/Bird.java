@@ -35,8 +35,8 @@ public class Bird {
 				if (x + getWidth() / 10 * 9 <= tempObject.getX()) {
 					x = tempObject.getX() - width;
 				} else if (y < tempObject.getY()) {
-					y = tempObject.getY() - height;
 					velY = 0;
+					y = tempObject.getY() - height;
 				} else if (y > tempObject.getY() + tempObject.getHeight()) {
 					y = tempObject.getY() + tempObject.getHeight();
 					y = tempObject.getY() + tempObject.getHeight();

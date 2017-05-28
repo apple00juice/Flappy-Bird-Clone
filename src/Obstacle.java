@@ -1,16 +1,31 @@
+import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.nio.Buffer;
+
+import javax.imageio.ImageIO;
 
 class Obstacle {
 		
 		private float x,y;
 		private float width,height;
 		private boolean passed = false;
+		private BufferedImage image;
+		private float imagescale = 3;
 		
-		public Obstacle(float x, float y, float width, float height) {
+		public Obstacle(float x, float y,float height) {
 			this.x = x;
 			this.y = y;
-			this.width = width;
 			this.height = height;
+			
+			try {
+				image = ImageIO.read(getClass().getResource("FBC-Tube.png"));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			width = image.getWidth()*imagescale;
 		}
 		
 		public void tick(double dt){
@@ -59,6 +74,14 @@ class Obstacle {
 
 		public void setPassed(boolean passed) {
 			this.passed = passed;
+		}
+
+		public BufferedImage getImage() {
+			return image;
+		}
+
+		public float getImagescale() {
+			return imagescale;
 		}
 		
 		

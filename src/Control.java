@@ -4,6 +4,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferStrategy;
+import java.util.List;
 
 import javax.swing.JFrame;
 
@@ -21,10 +23,11 @@ public class Control implements Runnable, KeyListener {
 
 	public Control() {
 		frame = new JFrame(title);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.pack();
 
 		model = new Model(this);
-		view = new View(model.ObstacleList, model.bird, this);
+		view = new View(model.ObstacleList, model.bird, this, model.getViewableObstacles());
 		view.setPreferredSize(new Dimension(width, height));
 
 		frame.add(view);
@@ -42,9 +45,21 @@ public class Control implements Runnable, KeyListener {
 	public static void main(String[] args) {
 		new Control();
 	}
-
+	
 	private void updateView() {
-		view.ObstacleList = model.ObstacleList;
+		
+		List<Obstacle> templist = model.ObstacleList;
+		
+		float[][] temparray = new float[templist.size()][3];
+		
+		for(int i = 0; i < templist.size(); i++){
+			temparray[i][0] = templist.get(i).getX();
+			temparray[i][1] = templist.get(i).getY();
+			temparray[i][2] = templist.get(i).getHeight();
+		}
+		
+		view.setXyh(temparray);
+		
 		view.setCounter(model.getCounter());
 		view.repaint();
 
@@ -61,6 +76,7 @@ public class Control implements Runnable, KeyListener {
 			if (currenttime - countingtime >= 1000) {
 				countingtime = currenttime;
 				frame.setTitle(title + " - " + frames + " FPS");
+				frames = 0;
 			}
 
 			double dt = (currenttime - lasttime) / 1000.0;
