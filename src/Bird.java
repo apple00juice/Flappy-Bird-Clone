@@ -1,5 +1,9 @@
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 public class Bird {
 
@@ -7,17 +11,44 @@ public class Bird {
 	private float velX, velY;
 	private float width = 50, height = 45;
 
-	private float gravity = 500;
+	private float gravity = 750;
 
 	private boolean dead = false;
+
+	private BufferedImage image;
+
+	private float imagescale = 4.5f;
+
+	private float rot;
+
+	private float rotcenterx;
+	private float rotcentery;
 
 	public Bird(float x, float y) {
 		this.x = x;
 		this.y = y;
+
+		try {
+			image = ImageIO.read(getClass().getResource("FBC-Bird.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		width = image.getWidth() * imagescale;
+		height = image.getHeight() * imagescale;
+
+		rot = 0;
+
+		rotcenterx = x + width / 2;
+		rotcentery = y + height / 2;
 	}
 
 	public void tick(double dt, List<Obstacle> ObstacleList) {
 		velY -= gravity * dt;
+
+		rot = (float) Math.toDegrees(Math.atan((-velY / (25000f * dt))));
+		if (rot < 0)
+			rot = 0;
 
 		collision(ObstacleList);
 
@@ -36,7 +67,7 @@ public class Bird {
 					x = tempObject.getX() - width;
 				} else if (y < tempObject.getY()) {
 					velY = 0;
-					y = tempObject.getY() - height;
+					y = tempObject.getY() - height + 2;
 				} else if (y > tempObject.getY() + tempObject.getHeight()) {
 					y = tempObject.getY() + tempObject.getHeight();
 					y = tempObject.getY() + tempObject.getHeight();
@@ -48,8 +79,20 @@ public class Bird {
 
 	}
 
-	private Rectangle getBound() {
+	public Rectangle getBound() {
+		/*
+		 * Rectangle berrechnen nach rotation
+		 * 
+		 * float newwidth = (float) (Math.cos(Math.toRadians(rot)) * width +
+		 * Math.cos(Math.toRadians(90 - rot)) * height); float newheight =
+		 * (float) (Math.sin(Math.toRadians(rot)) * width +
+		 * Math.sin(Math.toRadians(90 - rot)) * height); return new
+		 * Rectangle((int) ((x + width / 2f) - newwidth / 2f), (int) ((y +
+		 * height / 2f) - newheight / 2f), (int) newwidth, (int) newheight);
+		 */
+		
 		return new Rectangle((int) x, (int) y, (int) width, (int) height);
+
 	}
 
 	public boolean isDead() {
@@ -106,6 +149,30 @@ public class Bird {
 
 	public void setGravity(float gravity) {
 		this.gravity = gravity;
+	}
+
+	public BufferedImage getImage() {
+		return image;
+	}
+
+	public float getImagescale() {
+		return imagescale;
+	}
+
+	public void setWidth(float width) {
+		this.width = width;
+	}
+
+	public void setHeight(float height) {
+		this.height = height;
+	}
+
+	public float getRot() {
+		return rot;
+	}
+
+	public void setRot(float rot) {
+		this.rot = rot;
 	}
 
 }

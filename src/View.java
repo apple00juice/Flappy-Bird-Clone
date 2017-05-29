@@ -22,7 +22,7 @@ public class View extends JPanel {
 	int counter = 0;
 
 	private JLabel JLcounter;
-	
+
 	private float[][] xyh;
 
 	private boolean collisionbox = false;
@@ -33,8 +33,8 @@ public class View extends JPanel {
 		this.bird = bird;
 		this.ObstacleList = ObstacleList;
 
-		xyh = new float[objects*2][3];
-		
+		xyh = new float[objects * 2][3];
+
 		setLayout(null);
 
 		JLcounter = new JLabel(Integer.toString(counter));
@@ -79,9 +79,21 @@ public class View extends JPanel {
 				(int) JLcounter.getPreferredSize().getHeight());
 
 		// Draw Bird
-		g.setColor(Color.red);
-		g.fillOval((int) (xoffset + bird.getX() * scale), (int) (yoffset + bird.getY() * scale),
-				(int) (bird.getWidth() * scale), (int) (bird.getHeight() * scale));
+
+		float birdtempscale = bird.getImagescale() * scale;
+
+		AffineTransform Birdaf = AffineTransform.getTranslateInstance(xoffset + bird.getX() * scale,
+				yoffset + bird.getY() * scale);
+		Birdaf.scale(birdtempscale, birdtempscale);
+		Birdaf.rotate(Math.toRadians(bird.getRot()), bird.getImage().getWidth() / 2, bird.getImage().getHeight() / 2);
+		g2.drawImage(bird.getImage(), Birdaf, null);
+
+		if (collisionbox) {
+			g.setColor(Color.red);
+			g.drawRect((int) (xoffset + bird.getBound().x * scale), (int) (yoffset + bird.getBound().y * scale),
+					(int) (bird.getBound().width * scale), (int) (bird.getBound().height * scale));
+
+		}
 
 		// Draw Obstacles
 		for (int i = 0; i < ObstacleList.size(); i++) {
@@ -138,6 +150,7 @@ public class View extends JPanel {
 				g.setColor(Color.red);
 				g.drawRect((int) (xoffset + tempObject.getX() * scale), (int) (yoffset + tempObject.getY() * scale),
 						(int) (tempObject.getWidth() * scale), (int) (tempObject.getHeight() * scale));
+
 			}
 
 		}

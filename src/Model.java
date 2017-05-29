@@ -9,7 +9,7 @@ public class Model {
 
 	public Bird bird;
 
-	private int distbetwObst = 500;
+	private int distbetwObst = 300;
 
 	private boolean run;
 
@@ -58,7 +58,7 @@ public class Model {
 
 	public void SpacePressed() {
 		if (!bird.isDead())
-			bird.setVelY(150);
+			bird.setVelY(250);
 		run = true;
 	}
 
@@ -71,7 +71,7 @@ public class Model {
 		bird.setDead(false);
 
 		for (int i = 0; i < viewableObstacles; i++) {
-			int gapHight = 200;
+			int gapHight = 150;
 			int gapY = Math.round(
 					Math.round((Math.random() * ((c.getHeight() - gapHight) / 2) + ((c.getHeight() - gapHight) / 2))));
 
@@ -99,7 +99,7 @@ public class Model {
 
 		for (int i = 0; i < removed / 2; i++) {
 
-			int gapHight = 200;
+			int gapHight = 150;
 			int gapY = Math.round(Math.round((Math.random() * (c.getHeight() - gapHight))));
 
 			ObstacleList.add(new Obstacle(ObstacleList.get(ObstacleList.size() - 1).getX() + distbetwObst, 0, gapY));
