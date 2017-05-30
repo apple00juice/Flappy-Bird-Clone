@@ -1,3 +1,4 @@
+package Control;
 
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
@@ -9,6 +10,9 @@ import java.util.List;
 
 import javax.swing.JFrame;
 
+import Model.Model;
+import View.View;
+
 public class Control implements Runnable, KeyListener {
 
 	private JFrame frame;
@@ -19,15 +23,25 @@ public class Control implements Runnable, KeyListener {
 	private Model model;
 	private View view;
 
+	private boolean showFPS = true;
+
 	Thread thread;
 
+	public enum GameStates {
+		Menu, Game;
+	}
+
+	public GameStates gameState;
+
 	public Control() {
+		gameState = GameStates.Menu;
+
 		frame = new JFrame(title);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.pack();
 
 		model = new Model(this);
-		view = new View(model.ObstacleList, model.bird, this, model.getViewableObstacles());
+		view = new View(this);
 		view.setPreferredSize(new Dimension(width, height));
 
 		frame.add(view);
@@ -45,23 +59,14 @@ public class Control implements Runnable, KeyListener {
 	public static void main(String[] args) {
 		new Control();
 	}
-	
+
 	private void updateView() {
+
+		view.viewgame.ObstacleList = model.ObstacleList;
+		view.viewgame.bird = model.bird;
+		view.viewgame.setCounter(model.getCounter());
 		
-		List<Obstacle> templist = model.ObstacleList;
-		
-		float[][] temparray = new float[templist.size()][3];
-		
-		for(int i = 0; i < templist.size(); i++){
-			temparray[i][0] = templist.get(i).getX();
-			temparray[i][1] = templist.get(i).getY();
-			temparray[i][2] = templist.get(i).getHeight();
-		}
-		
-		view.setXyh(temparray);
-		
-		view.setCounter(model.getCounter());
-		view.repaint();
+		view.render();
 
 	}
 
@@ -73,7 +78,7 @@ public class Control implements Runnable, KeyListener {
 		while (true) {
 			long currenttime = System.currentTimeMillis();
 
-			if (currenttime - countingtime >= 1000) {
+			if (currenttime - countingtime >= 1000 && showFPS) {
 				countingtime = currenttime;
 				frame.setTitle(title + " - " + frames + " FPS");
 				frames = 0;
@@ -94,8 +99,6 @@ public class Control implements Runnable, KeyListener {
 		}
 	}
 
-	
-
 	public int getWidth() {
 		return width;
 	}
@@ -105,31 +108,38 @@ public class Control implements Runnable, KeyListener {
 	}
 
 	private boolean released = true;
-	
+
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if(e.getKeyCode() == e.VK_SPACE && released){
+		if (e.getKeyCode() == e.VK_SPACE && released) {
 			model.SpacePressed();
 		}
-		
-		if(e.getKeyCode() == e.VK_R){
+
+		if (e.getKeyCode() == e.VK_R) {
 			model.resetMap();
-			
+
 		}
-		
+
+		if (e.getKeyCode() == e.VK_G) {
+			gameState = GameStates.Game;
+
+		} else if (e.getKeyCode() == e.VK_M) {
+			gameState = GameStates.Menu;
+		}
+
 		released = false;
+
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
 		released = true;
-		
+
 	}
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		
-		
+
 	}
 
 }

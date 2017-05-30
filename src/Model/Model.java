@@ -1,5 +1,8 @@
+package Model;
 import java.util.ArrayList;
 import java.util.List;
+
+import Control.Control;
 
 public class Model {
 
@@ -69,6 +72,7 @@ public class Model {
 		ObstacleList.clear();
 		bird.setY(c.getHeight() / 3 * 2);
 		bird.setDead(false);
+		bird.setRot(0);
 
 		for (int i = 0; i < viewableObstacles; i++) {
 			int gapHight = 150;

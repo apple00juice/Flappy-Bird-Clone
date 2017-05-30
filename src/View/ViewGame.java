@@ -1,8 +1,8 @@
+package View;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -11,29 +11,28 @@ import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class View extends JPanel {
+import Control.Control;
+import Model.Bird;
+import Model.Obstacle;
+
+
+public class ViewGame extends JPanel{
 
 	Control c;
 
-	Bird bird;
+	public Bird bird;
 
-	List<Obstacle> ObstacleList;
+	public List<Obstacle> ObstacleList;
 
 	int counter = 0;
 
 	private JLabel JLcounter;
 
-	private float[][] xyh;
-
 	private boolean collisionbox = false;
 
-	public View(List<Obstacle> ObstacleList, Bird bird, Control c, int objects) {
+	public ViewGame(Control c) {
 		this.setDoubleBuffered(true);
 		this.c = c;
-		this.bird = bird;
-		this.ObstacleList = ObstacleList;
-
-		xyh = new float[objects * 2][3];
 
 		setLayout(null);
 
@@ -163,15 +162,7 @@ public class View extends JPanel {
 		// rechts links
 		g.fillRect(0, 0, xoffset, getHeight());
 		g.fillRect((int) (xoffset + c.getWidth() * scale), 0, (int) getWidth(), getHeight());
-
-	}
-
-	public float[][] getXyh() {
-		return xyh;
-	}
-
-	public void setXyh(float[][] xyh) {
-		this.xyh = xyh;
+		
 	}
 
 }

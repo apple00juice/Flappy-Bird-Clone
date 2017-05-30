@@ -1,12 +1,12 @@
-import java.awt.Image;
+package Model;
+
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.nio.Buffer;
 
 import javax.imageio.ImageIO;
 
-class Obstacle {
+public class Obstacle {
 		
 		private float x,y;
 		private float width,height;
@@ -20,7 +20,7 @@ class Obstacle {
 			this.height = height;
 			
 			try {
-				image = ImageIO.read(getClass().getResource("FBC-Tube.png"));
+				image = ImageIO.read(getClass().getResource("/FBC-Tube.png"));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

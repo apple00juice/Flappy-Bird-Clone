@@ -1,3 +1,4 @@
+package Model;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -29,7 +30,7 @@ public class Bird {
 		this.y = y;
 
 		try {
-			image = ImageIO.read(getClass().getResource("FBC-Bird.png"));
+			image = ImageIO.read(getClass().getResource("/FBC-Bird.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
