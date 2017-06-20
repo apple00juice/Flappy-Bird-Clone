@@ -1,4 +1,5 @@
 package View;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -15,10 +16,11 @@ import Control.Control;
 import Model.Bird;
 import Model.Obstacle;
 
-
-public class ViewGame extends JPanel{
+public class ViewGame extends JPanel {
 
 	Control c;
+	
+	View v;
 
 	public Bird bird;
 
@@ -29,10 +31,13 @@ public class ViewGame extends JPanel{
 	private JLabel JLcounter;
 
 	private boolean collisionbox = false;
+	
+	
 
-	public ViewGame(Control c) {
+	public ViewGame(Control c, View v) {
 		this.setDoubleBuffered(true);
 		this.c = c;
+		this.v = v;
 
 		setLayout(null);
 
@@ -52,24 +57,17 @@ public class ViewGame extends JPanel{
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-
+		if (bird == null || ObstacleList == null)
+			return;
+		
 		Graphics2D g2 = (Graphics2D) g;
 
-		int xoffset;
-		int yoffset;
-		float scale;
+		g.setColor(Color.WHITE);
+		g2.fillRect(0, 0, getWidth(), getHeight());
 
-		if (getWidth() * c.getHeight() / c.getWidth() < getHeight()) {
-
-			xoffset = 0;
-			yoffset = (getHeight() - (getWidth() * c.getHeight() / c.getWidth())) / 2;
-			scale = getWidth() / (c.getWidth() * 1f);
-		} else {
-			xoffset = (getWidth() - (getHeight() * c.getWidth() / c.getHeight())) / 2;
-			yoffset = 0;
-			scale = getHeight() / (c.getHeight() * 1f);
-
-		}
+		int xoffset = v.xoffset;
+		int yoffset = v.yoffset;
+		float scale = v.scale;
 
 		// update counter
 		JLcounter.setFont(new Font("Arial", 10, (int) (100 * scale)));
@@ -101,27 +99,30 @@ public class ViewGame extends JPanel{
 			float tempscale = tempObject.getImagescale() * scale;
 
 			BufferedImage tempimage = tempObject.getImage();
-			BufferedImage tempfillerimage = tempimage.getSubimage(0, tempimage.getHeight() - 1, tempimage.getWidth(),
-					1);
+			BufferedImage tempfillerimage = tempimage.getSubimage(0, tempimage.getHeight() - 2, tempimage.getWidth(),
+					2);
 
 			if (tempObject.getY() == 0) {
+
+				float x = xoffset + tempObject.getX() * scale;
 
 				AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
 				tx.translate(-tempimage.getWidth(), 0);
 				AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
 				tempimage = op.filter(tempimage, null);
 
-				AffineTransform af = AffineTransform.getTranslateInstance(xoffset + tempObject.getX() * scale,
+				AffineTransform af = AffineTransform.getTranslateInstance(x,
 						yoffset + (tempObject.getHeight() * scale - tempimage.getHeight() * tempscale));
 				af.scale(tempscale, tempscale);
 				af.rotate(Math.PI, tempimage.getWidth() / 2f, tempimage.getHeight() / 2f);
 
 				g2.drawImage(tempimage, af, null);
 
-				float yspace = (tempObject.getHeight() - tempimage.getHeight() * tempObject.getImagescale());
+				float yspace = (tempObject.getHeight() - tempimage.getHeight() * tempObject.getImagescale())
+						/ tempfillerimage.getHeight();
 
 				for (int p = 0; p < yspace; p++) {
-					af = AffineTransform.getTranslateInstance(xoffset + tempObject.getX() * scale, yoffset + p * scale);
+					af = AffineTransform.getTranslateInstance(x, yoffset + p * tempfillerimage.getHeight() * scale);
 					af.scale(tempscale, tempscale);
 
 					g2.drawImage(tempfillerimage, af, null);
@@ -129,16 +130,19 @@ public class ViewGame extends JPanel{
 
 			} else {
 
-				AffineTransform af = AffineTransform.getTranslateInstance(xoffset + tempObject.getX() * scale,
-						yoffset + tempObject.getY() * scale);
+				float x = xoffset + tempObject.getX() * scale;
+
+				AffineTransform af = AffineTransform.getTranslateInstance(x, yoffset + tempObject.getY() * scale);
 				af.scale(tempscale, tempscale);
 				g2.drawImage(tempimage, af, null);
 
-				float yspace = c.getHeight() - (tempObject.getY() + tempimage.getHeight());
+				float yspace = (c.getHeight() - (tempObject.getY() + tempimage.getHeight()))
+						/ tempfillerimage.getHeight();
 
-				for (int p = 0; p < yspace; p++) {
-					af = AffineTransform.getTranslateInstance(xoffset + tempObject.getX() * scale,
-							yoffset + (tempObject.getY() * scale + tempimage.getHeight() * tempscale) + p * scale);
+				for (int p = 0; p < yspace; p += tempfillerimage.getHeight()) {
+					af = AffineTransform.getTranslateInstance(x,
+							yoffset + (tempObject.getY() * scale + tempimage.getHeight() * tempscale)
+									+ p * tempfillerimage.getHeight() * scale);
 					af.scale(tempscale, tempscale);
 					g2.drawImage(tempfillerimage, af, null);
 				}
@@ -162,7 +166,7 @@ public class ViewGame extends JPanel{
 		// rechts links
 		g.fillRect(0, 0, xoffset, getHeight());
 		g.fillRect((int) (xoffset + c.getWidth() * scale), 0, (int) getWidth(), getHeight());
-		
+
 	}
 
 }

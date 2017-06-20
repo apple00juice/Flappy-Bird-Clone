@@ -1,4 +1,5 @@
 package Model;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,9 +21,15 @@ public class Model {
 
 	int viewableObstacles;
 
+	boolean updatingmap = false;
+
+	float birdSpeed = 200;
+	float birdJump = 350;
+	float gravity = 750;
+
 	public Model(Control c) {
 		this.c = c;
-		bird = new Bird(c.getWidth() / 5, c.getHeight() / 3 * 2);
+		bird = new Bird(c.getWidth() / 5, c.getHeight() / 3 * 2, gravity,birdSpeed);
 		viewableObstacles = Math.round(Math.round(Math.ceil((c.getWidth() * 1f) / distbetwObst))) + 1;
 		resetMap();
 
@@ -54,14 +61,14 @@ public class Model {
 					ObstacleList.get(i).tick(dt);
 				}
 			}
-
+			updatingmap = true;
 			updateMap();
 		}
 	}
 
-	public void SpacePressed() {
+	public void birdJump() {
 		if (!bird.isDead())
-			bird.setVelY(250);
+			bird.setVelY(birdJump);
 		run = true;
 	}
 
@@ -77,12 +84,13 @@ public class Model {
 		for (int i = 0; i < viewableObstacles; i++) {
 			int gapHight = 150;
 			int gapY = Math.round(
-					Math.round((Math.random() * ((c.getHeight() - gapHight) / 2) + ((c.getHeight() - gapHight) / 2))));
+					Math.round((Math.random() * ((c.getHeight() - gapHight) / 2)+((c.getHeight() - gapHight) / 4))));
 
-			ObstacleList.add(new Obstacle(c.getWidth() / 2 + distbetwObst * i, 0, gapY));
+			ObstacleList.add(new Obstacle(c.getWidth() / 2 + distbetwObst * i, 0, gapY, birdSpeed));
 			ObstacleList.add(new Obstacle(c.getWidth() / 2 + distbetwObst * i, gapY + gapHight,
-					c.getHeight() - gapY - gapHight));
+					c.getHeight() - gapY - gapHight, birdSpeed));
 		}
+
 	}
 
 	private void updateMap() {
@@ -106,12 +114,12 @@ public class Model {
 			int gapHight = 150;
 			int gapY = Math.round(Math.round((Math.random() * (c.getHeight() - gapHight))));
 
-			ObstacleList.add(new Obstacle(ObstacleList.get(ObstacleList.size() - 1).getX() + distbetwObst, 0, gapY));
+			ObstacleList.add(new Obstacle(ObstacleList.get(ObstacleList.size() - 1).getX() + distbetwObst, 0, gapY,birdSpeed));
 
 			ObstacleList.add(new Obstacle(ObstacleList.get(ObstacleList.size() - 2).getX() + distbetwObst,
-					gapY + gapHight, (c.getHeight() - gapY - gapHight)));
+					gapY + gapHight, (c.getHeight() - gapY - gapHight),birdSpeed));
 		}
-
+		updatingmap = false;
 	}
 
 	public int getCounter() {
@@ -124,6 +132,10 @@ public class Model {
 
 	public int getViewableObstacles() {
 		return viewableObstacles;
+	}
+
+	public boolean isUpdatingmap() {
+		return updatingmap;
 	}
 
 }

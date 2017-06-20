@@ -12,7 +12,8 @@ public class Bird {
 	private float velX, velY;
 	private float width = 50, height = 45;
 
-	private float gravity = 750;
+	private float gravity;
+	private float birdspeed;
 
 	private boolean dead = false;
 
@@ -22,12 +23,11 @@ public class Bird {
 
 	private float rot;
 
-	private float rotcenterx;
-	private float rotcentery;
-
-	public Bird(float x, float y) {
+	public Bird(float x, float y, float gravity, float birdspeed) {
 		this.x = x;
 		this.y = y;
+		this.gravity = gravity;
+		this.birdspeed = birdspeed;
 
 		try {
 			image = ImageIO.read(getClass().getResource("/FBC-Bird.png"));
@@ -40,16 +40,14 @@ public class Bird {
 
 		rot = 0;
 
-		rotcenterx = x + width / 2;
-		rotcentery = y + height / 2;
 	}
 
 	public void tick(double dt, List<Obstacle> ObstacleList) {
 		velY -= gravity * dt;
 
-		rot = (float) Math.toDegrees(Math.atan((-velY / (25000f * dt))));
-		if (rot < 0)
-			rot = 0;
+		rot = (float) Math.toDegrees(Math.atan((-velY / (birdspeed * dt*100))));
+		if (rot < -25)
+			rot = -25;
 
 		collision(ObstacleList);
 
@@ -71,9 +69,9 @@ public class Bird {
 					y = tempObject.getY() - height + 2;
 				} else if (y > tempObject.getY() + tempObject.getHeight()) {
 					y = tempObject.getY() + tempObject.getHeight();
-					y = tempObject.getY() + tempObject.getHeight();
 					y = velY = 0;
 				}
+				
 			}
 
 		}
@@ -81,16 +79,6 @@ public class Bird {
 	}
 
 	public Rectangle getBound() {
-		/*
-		 * Rectangle berrechnen nach rotation
-		 * 
-		 * float newwidth = (float) (Math.cos(Math.toRadians(rot)) * width +
-		 * Math.cos(Math.toRadians(90 - rot)) * height); float newheight =
-		 * (float) (Math.sin(Math.toRadians(rot)) * width +
-		 * Math.sin(Math.toRadians(90 - rot)) * height); return new
-		 * Rectangle((int) ((x + width / 2f) - newwidth / 2f), (int) ((y +
-		 * height / 2f) - newheight / 2f), (int) newwidth, (int) newheight);
-		 */
 		
 		return new Rectangle((int) x, (int) y, (int) width, (int) height);
 

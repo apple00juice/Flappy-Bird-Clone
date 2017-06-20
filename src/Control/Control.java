@@ -1,31 +1,27 @@
 package Control;
 
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.image.BufferStrategy;
-import java.util.List;
 
 import javax.swing.JFrame;
 
 import Model.Model;
 import View.View;
 
-public class Control implements Runnable, KeyListener {
+public class Control implements Runnable, KeyListener, ActionListener {
 
-	private JFrame frame;
+	public JFrame frame;
 
 	private String title = "Flappy Bird Clon";
 	private int width = 800, height = 600;
 
-	private Model model;
+	public Model model;
 	private View view;
 
 	private boolean showFPS = true;
-
-	Thread thread;
 
 	public enum GameStates {
 		Menu, Game;
@@ -51,8 +47,7 @@ public class Control implements Runnable, KeyListener {
 		frame.pack();
 		frame.setVisible(true);
 
-		thread = new Thread(this);
-		thread.start();
+		this.run();
 
 	}
 
@@ -61,12 +56,15 @@ public class Control implements Runnable, KeyListener {
 	}
 
 	private void updateView() {
+		if (!model.isUpdatingmap()) {
+			if (view.viewgame.ObstacleList != model.ObstacleList)
+				view.viewgame.ObstacleList = model.ObstacleList;
 
-		view.viewgame.ObstacleList = model.ObstacleList;
-		view.viewgame.bird = model.bird;
-		view.viewgame.setCounter(model.getCounter());
-		
-		view.render();
+			view.viewgame.bird = model.bird;
+			view.viewgame.setCounter(model.getCounter());
+
+			view.render();
+		}
 
 	}
 
@@ -112,7 +110,7 @@ public class Control implements Runnable, KeyListener {
 	@Override
 	public void keyPressed(KeyEvent e) {
 		if (e.getKeyCode() == e.VK_SPACE && released) {
-			model.SpacePressed();
+			model.birdJump();
 		}
 
 		if (e.getKeyCode() == e.VK_R) {
@@ -139,6 +137,21 @@ public class Control implements Runnable, KeyListener {
 
 	@Override
 	public void keyTyped(KeyEvent e) {
+
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+
+		if (e.getSource() == view.viewmenu.startbutton) {
+			released = true;
+			model.resetMap();
+			gameState = GameStates.Game;
+		} else if (e.getSource() == view.viewmenu.exitbutton) {
+			frame.setVisible(false);
+			frame.dispose();
+			System.exit(1);
+		}
 
 	}
 

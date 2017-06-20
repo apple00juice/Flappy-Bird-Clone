@@ -13,11 +13,13 @@ public class Obstacle {
 		private boolean passed = false;
 		private BufferedImage image;
 		private float imagescale = 3;
+		float speed;
 		
-		public Obstacle(float x, float y,float height) {
+		public Obstacle(float x, float y,float height,float speed) {
 			this.x = x;
 			this.y = y;
 			this.height = height;
+			this.speed = speed;
 			
 			try {
 				image = ImageIO.read(getClass().getResource("/FBC-Tube.png"));
@@ -29,7 +31,7 @@ public class Obstacle {
 		}
 		
 		public void tick(double dt){
-			x -= 100*dt;
+			x -= speed*dt;
 		}
 		
 		public Rectangle getBounds(){
