@@ -1,22 +1,23 @@
 package Control;
 
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-
-import javax.swing.JFrame;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.util.Scanner;
 
 import Model.Model;
 import View.View;
 
 public class Control implements Runnable, KeyListener, ActionListener {
 
-	public JFrame frame;
-
 	private String title = "Flappy Bird Clon";
-	private int width = 800, height = 600;
+	public int width = 800, height = 600;
 
 	public Model model;
 	private View view;
@@ -29,26 +30,81 @@ public class Control implements Runnable, KeyListener, ActionListener {
 
 	public GameStates gameState;
 
+	String path = "";
+	File highScore;
+
+	int highScoreNumber = 0;
+	boolean highScoreUpdated;
+	boolean canUpdateHighscoreFile;
+
+	private boolean released = true;
+
+	public void setHighScorePath() {
+		String os = System.getProperty("os.name").toLowerCase();
+		canUpdateHighscoreFile = true;
+
+		if (os.indexOf("win") >= 0) {
+
+			String user = System.getProperty("user.name");
+
+			path = "C:/Users/" + user + "/AppData/Roaming" + "/FlappyBirdClon";
+
+			File dir = new File(path);
+			dir.mkdir();
+
+			path += "/highScore.txt";
+
+		}  else {
+			System.err.println("Local Highscore saving not support!!");
+			canUpdateHighscoreFile = false;
+		}
+
+	}
+
 	public Control() {
 		gameState = GameStates.Menu;
 
-		frame = new JFrame(title);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.pack();
+		setHighScorePath();
+
+		highScoreNumber = 0;
+
+		if (canUpdateHighscoreFile) {
+
+			highScore = new File(path);
+			if (!highScore.exists()) {
+				try {
+					highScore.createNewFile();
+					updateScoreFile(0);
+
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
+			loadHighScore();
+		}
+
+		highScoreUpdated = false;
 
 		model = new Model(this);
-		view = new View(this);
-		view.setPreferredSize(new Dimension(width, height));
-
-		frame.add(view);
-		frame.addKeyListener(this);
-
-		frame.setPreferredSize(frame.getPreferredSize());
-		frame.pack();
-		frame.setVisible(true);
-
+		view = new View(this, title, width, height);
+		view.viewgame.BackgroundList = model.BackgroundList;
+		view.viewgame.GroundList = model.GroundList;
 		this.run();
 
+	}
+
+	public void loadHighScore() {
+
+		Scanner scan;
+		try {
+			scan = new Scanner(highScore);
+			highScoreNumber = scan.nextInt();
+			scan.close();
+		} catch (FileNotFoundException e) {
+
+			e.printStackTrace();
+		}
 	}
 
 	public static void main(String[] args) {
@@ -56,14 +112,31 @@ public class Control implements Runnable, KeyListener, ActionListener {
 	}
 
 	private void updateView() {
-		if (!model.isUpdatingmap()) {
+		if (!model.updatingMap) {
 			if (view.viewgame.ObstacleList != model.ObstacleList)
+
 				view.viewgame.ObstacleList = model.ObstacleList;
 
 			view.viewgame.bird = model.bird;
-			view.viewgame.setCounter(model.getCounter());
-
+			if (!model.bird.dead)
+				view.viewgame.setCounter(model.counter);
 			view.render();
+		}
+
+	}
+
+	public void updateScoreFile(int highScore) {
+		this.highScoreNumber = highScore;
+		try {
+			PrintWriter writer = new PrintWriter(path, "UTF-8");
+			writer.println(Integer.toString(highScore));
+			writer.close();
+		} catch (FileNotFoundException e) {
+
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+
+			e.printStackTrace();
 		}
 
 	}
@@ -78,55 +151,54 @@ public class Control implements Runnable, KeyListener, ActionListener {
 
 			if (currenttime - countingtime >= 1000 && showFPS) {
 				countingtime = currenttime;
-				frame.setTitle(title + " - " + frames + " FPS");
+				view.frame.setTitle(title + " - " + frames + " FPS");
 				frames = 0;
 			}
 
 			double dt = (currenttime - lasttime) / 1000.0;
 
 			model.tick(dt);
+			view.viewgame.controlles.setVisible(!model.run && (gameState != GameStates.Menu));
+			view.viewgame.resultPanel.setVisible(model.bird.dead && (gameState != GameStates.Menu));
+
+			if (model.bird.dead && (gameState != GameStates.Menu)) {
+				if (!highScoreUpdated) {
+					if (model.counter > highScoreNumber) {
+						
+						if (canUpdateHighscoreFile)
+							updateScoreFile(model.counter);
+						
+						highScoreNumber = model.counter;
+						view.viewgame.bestInfo.setText("NEW BEST!");
+					} else {
+						view.viewgame.bestInfo.setText("BEST");
+					}
+
+					highScoreUpdated = true;
+				}
+				view.viewgame.JLcounter.setText("GAME OVER");
+				view.viewgame.score.setText(Integer.toString(model.counter));
+				view.viewgame.highScore.setText(Integer.toString(highScoreNumber));
+			}
+
 			updateView();
 			frames++;
 
 			lasttime = currenttime;
 			try {
-				Thread.sleep(10);
+				Thread.sleep(1000L / 60);
 			} catch (Exception e) {
 			}
 
 		}
 	}
 
-	public int getWidth() {
-		return width;
-	}
-
-	public int getHeight() {
-		return height;
-	}
-
-	private boolean released = true;
-
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if (e.getKeyCode() == e.VK_SPACE && released) {
+		if (e.getKeyCode() == KeyEvent.VK_SPACE && released) {
 			model.birdJump();
 		}
-
-		if (e.getKeyCode() == e.VK_R) {
-			model.resetMap();
-
-		}
-
-		if (e.getKeyCode() == e.VK_G) {
-			gameState = GameStates.Game;
-
-		} else if (e.getKeyCode() == e.VK_M) {
-			gameState = GameStates.Menu;
-		}
-
 		released = false;
-
 	}
 
 	@Override
@@ -145,12 +217,19 @@ public class Control implements Runnable, KeyListener, ActionListener {
 
 		if (e.getSource() == view.viewmenu.startbutton) {
 			released = true;
-			model.resetMap();
 			gameState = GameStates.Game;
+			highScoreUpdated = false;
 		} else if (e.getSource() == view.viewmenu.exitbutton) {
-			frame.setVisible(false);
-			frame.dispose();
+			view.frame.setVisible(false);
+			view.frame.dispose();
 			System.exit(1);
+		} else if (e.getSource() == view.viewgame.menuButton) {
+			model.resetMap();
+			gameState = GameStates.Menu;
+		} else if (e.getSource() == view.viewgame.restartButton) {
+			released = true;
+			model.resetMap();
+			highScoreUpdated = false;
 		}
 
 	}

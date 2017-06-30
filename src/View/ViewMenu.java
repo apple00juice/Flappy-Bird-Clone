@@ -1,18 +1,9 @@
 package View;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-import javax.imageio.ImageIO;
-import javax.swing.Action;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -20,6 +11,11 @@ import javax.swing.JPanel;
 import Control.Control;
 
 public class ViewMenu extends JPanel {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	public JButton startbutton;
 
@@ -39,49 +35,50 @@ public class ViewMenu extends JPanel {
 
 		setLayout(null);
 
-		buttonWidth = c.getWidth() / 3;
-		buttonHeight = c.getWidth() / 10;
+		buttonWidth = c.width / 3;
+		buttonHeight = c.width / 10;
 
-		title = new JLabel("Flappy Birds");
-		title.setFont(new Font("Arial", 10, 100));
-		title.setForeground(Color.red);
+		title = new JLabel("<html><b>Flappy Bird</b></html>");
+		title.setFont(new Font(View.font, 10, 100));
+		title.setForeground(new Color(	255, 162, 74));
 		this.add(title);
 
 		startbutton = new JButton("Start");
-		startbutton.setBackground(Color.white);
-		startbutton.setForeground(Color.ORANGE);
+		startbutton.setBackground(new Color(222,215,148));
+		startbutton.setForeground(new Color(255, 121, 90));
 		startbutton.setEnabled(true);
 		this.add(startbutton);
 		startbutton.addActionListener(c);
 
 		exitbutton = new JButton("Exit");
-		exitbutton.setBackground(Color.white);
-		exitbutton.setForeground(Color.ORANGE);
+		exitbutton.setBackground(new Color(222,215,148));
+		exitbutton.setForeground(new Color(255, 121, 90));
 		exitbutton.setEnabled(true);
 		this.add(exitbutton);
 		exitbutton.addActionListener(c);
 
+		this.setBackground(null);
+		this.setOpaque(false);
+		
 	}
 
 	@Override
 	protected void paintComponent(Graphics g) {
 		// TODO Auto-generated method stub
 		super.paintComponent(g);
-		g.setColor(Color.BLACK);
-		g.fillRect(0, 0, getWidth(), getHeight());
 
 		float scale = v.scale;
 
-		title.setFont(new Font("Arial", 10, (int) (100 * scale)));
+		title.setFont(new Font(View.font, 10, (int) (100 * scale)));
 
 		title.setBounds((int) ((getWidth() - title.getPreferredSize().getWidth())/2), (int)(getHeight() *0.1),
 				(int)title.getPreferredSize().getWidth(), (int)title.getPreferredSize().getHeight());
 
-		startbutton.setFont(new Font("Arial", 10, (int) (50 * scale)));
+		startbutton.setFont(new Font(View.font, 10, (int) (50 * scale)));
 		startbutton.setBounds((int) (getWidth() - buttonWidth * scale) / 2, getHeight() / 2,
 				(int) (buttonWidth * scale), (int) (buttonHeight * scale));
 
-		exitbutton.setFont(new Font("Arial", 10, (int) (50 * scale)));
+		exitbutton.setFont(new Font(View.font, 10, (int) (50 * scale)));
 		exitbutton.setBounds((int) (getWidth() - buttonWidth * scale) / 2, getHeight() / 4 * 3,
 				(int) (buttonWidth * scale), (int) (buttonHeight * scale));
 
